@@ -57,10 +57,9 @@ async function getMyName() {
 }
 
 async function main() {
-    buildClient(ASANA_PAT);
+
     const ASANA_PAT = core.getInput('asana-pat', { required: true });
     const COMMIT_MESSAGE = github.context.payload.head_commit.message;
-    const USER_NAME = await getMyName();
     const BRANCH_NAME = github.context.ref.split('/').pop();
     const REPOSITORY_NAME = github.context.repo.repo;
     const COMMIT_URL = github.context.payload.head_commit.url;
@@ -78,7 +77,9 @@ async function main() {
         return;
     }
 
+    buildClient(ASANA_PAT);
 
+    const USER_NAME = await getMyName();
 
     // Step 3: Add comment to Asana task
     await addCommentToAsanaTask(taskId, USER_NAME, BRANCH_NAME, REPOSITORY_NAME, COMMIT_URL, COMMIT_MESSAGE);
