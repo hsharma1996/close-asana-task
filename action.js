@@ -43,17 +43,15 @@ function buildClient(asanaPAT) {
     let client = Asana.ApiClient.instance;
     let token = client.authentications['token'];
     token.accessToken = asanaPAT;
+    getMyName()
 }
 
 async function getMyName() {
     let usersApiInstance = new Asana.UsersApi();
     let user_gid = "me"; // String | A string identifying a user. This can either be the string \"me\", an email, or the gid of a user.
     try {
-        usersApiInstance.getUser(user_gid).then((data) => {
-            return data.name;
-        }, (error) => {
-            console.error(error);
-        });
+        let data = await usersApiInstance.getUser(user_gid).catch(console.log);
+        return data?.data?.name || "";
     } catch (error) {
         core.error(`Error getting user: ${error}`);
     }
@@ -94,3 +92,5 @@ async function main() {
 main().catch(error => {
     core.setFailed(`An unexpected error occurred: ${error}`);
 });
+
+// buildClient("1/1203243288582751:f2a179c7088ff2c47c9b355bb85afc0b");
