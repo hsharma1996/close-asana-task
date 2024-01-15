@@ -1,5 +1,8 @@
 name: "Close asana tasks"
 description: "Close asana tasks when the commit message contains the task id"
+branding:
+  icon: "activity"
+  color: "blue"
 runs:
   using: "node20"
   main: "index.js"
