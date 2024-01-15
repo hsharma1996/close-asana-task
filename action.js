@@ -72,7 +72,7 @@ async function main() {
     await addCommentToAsanaTask(taskId, USER_NAME, BRANCH_NAME, REPOSITORY_NAME, COMMIT_URL, COMMIT_MESSAGE);
 
     // Step 4: Use the ASANA_PAT to close the task on Asana
-    await closeAsanaTask(client, taskId);
+    await closeAsanaTask(taskId);
 
 
 }
