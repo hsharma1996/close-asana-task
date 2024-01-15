@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const asana = require('asana');
+const Asana = require('asana');
 
 async function findAsanaTaskId(commitMessage) {
     // Assuming your commit message format is like "Fixes #TASK_ID"
@@ -8,10 +8,15 @@ async function findAsanaTaskId(commitMessage) {
     return match ? match[1] : null;
 }
 
-async function closeAsanaTask(client, taskId) {
+async function closeAsanaTask(taskId) {
     try {
-        await client.tasks.update(taskId, {
-            completed: true
+        let taskApiInstance = new Asana.TasksApi();
+        let body = { "data": { "completed": true } }; // Object | The story to create.
+        let task_gid = taskId; // String | The task to operate on.
+        taskApiInstance.updateTask(body, task_gid).then((result) => {
+            console.log('API called successfully');
+        }, (error) => {
+            console.error(error.response.body);
         });
         core.info(`Closed Asana Task: ${taskId}`);
     } catch (error) {
@@ -19,16 +24,25 @@ async function closeAsanaTask(client, taskId) {
     }
 }
 
-async function addCommentToAsanaTask(client, taskId, userName, branchName, repoName, commitUrl, commitMessage) {
+async function addCommentToAsanaTask(taskId, userName, branchName, repoName, commitUrl, commitMessage) {
+    let storiesApiInstance = new Asana.StoriesApi();
     const commentText = `${userName} pushed to branch ${branchName} of ${repoName} (${commitUrl}): ${commitMessage}`;
+    let body = { "data": { "text": commentText } }; // Object | The story to create.
+    let task_gid = taskId; // String | The task to operate on.
     try {
-        await client.tasks.addComment(taskId, {
-            text: commentText
+        storiesApiInstance.createStoryForTask(body, task_gid).then((result) => {
+            console.log('API called successfully.');
+        }, (error) => {
+            console.error(error.response.body);
         });
-        core.info(`Added comment to Asana Task ${taskId}: ${commentText}`);
     } catch (error) {
         core.error(`Error adding comment to Asana Task: ${error}`);
     }
+}
+function buildClient(asanaPAT) {
+    let client = Asana.ApiClient.instance;
+    let token = client.authentications['token'];
+    token.accessToken = asanaPAT;
 }
 
 async function main() {
@@ -52,16 +66,15 @@ async function main() {
         return;
     }
 
-    // Step 3: Use the ASANA_PAT to close the task on Asana
-    const client = await asana.Client.create({
-        defaultHeaders: { 'asana-enable': 'new-sections,string_ids' },
-        logAsanaChangeWarnings: false
-    }).useAccessToken(ASANA_PAT).authorize();
+    buildClient(ASANA_PAT);
 
+    // Step 3: Add comment to Asana task
+    await addCommentToAsanaTask(taskId, USER_NAME, BRANCH_NAME, REPOSITORY_NAME, COMMIT_URL, COMMIT_MESSAGE);
+
+    // Step 4: Use the ASANA_PAT to close the task on Asana
     await closeAsanaTask(client, taskId);
 
-    // Step 4: Add comment to Asana task
-    await addCommentToAsanaTask(client, taskId, USER_NAME, BRANCH_NAME, REPOSITORY_NAME, COMMIT_URL, COMMIT_MESSAGE);
+
 }
 
 main().catch(error => {
