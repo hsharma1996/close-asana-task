@@ -45,10 +45,24 @@ function buildClient(asanaPAT) {
     token.accessToken = asanaPAT;
 }
 
+async function getMyName() {
+    let usersApiInstance = new Asana.UsersApi();
+    let user_gid = "me"; // String | A string identifying a user. This can either be the string \"me\", an email, or the gid of a user.
+    try {
+        usersApiInstance.getUser(user_gid).then((data) => {
+            return data.name;
+        }, (error) => {
+            console.error(error);
+        });
+    } catch (error) {
+        core.error(`Error getting user: ${error}`);
+    }
+}
+
 async function main() {
     const ASANA_PAT = core.getInput('asana-pat', { required: true });
     const COMMIT_MESSAGE = github.context.payload.head_commit.message;
-    const USER_NAME = github.context.actor;
+    const USER_NAME = await getMyName();
     const BRANCH_NAME = github.context.ref.split('/').pop();
     const REPOSITORY_NAME = github.context.repo.repo;
     const COMMIT_URL = github.context.payload.head_commit.url;
