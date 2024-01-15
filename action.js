@@ -90,8 +90,6 @@ async function main() {
 
 }
 
-// main().catch(error => {
-//     core.setFailed(`An unexpected error occurred: ${error}`);
-// });
-
-buildClient("1/1203243288582751:f2a179c7088ff2c47c9b355bb85afc0b")
+main().catch(error => {
+    core.setFailed(`An unexpected error occurred: ${error}`);
+});
