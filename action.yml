@@ -1,5 +1,5 @@
 name: "Close asana tasks"
-description: "Close asana tasks when the commit message contains the task id with one of the keywords: close, closes, closed, fix, fixes, fixed, resolve, resolves, resolved"
+description: "Close asana tasks when the commit message contains the task id"
 runs:
   using: "node20"
   main: "index.js"
