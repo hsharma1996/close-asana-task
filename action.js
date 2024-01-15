@@ -4,10 +4,7 @@ const asana = require('asana');
 
 async function findAsanaTaskId(commitMessage) {
     // Assuming your commit message format is like "Fixes #TASK_ID"
-    const keywords = ['fixed', 'fix', 'solved', 'close', 'closed', 'closes'];
-    const regex = new RegExp(`(?:${keywords.join('|')})\\s*#(\\d+)`, 'i');
-    const match = commitMessage.match(regex);
-    console.log("Match", match);
+    const match = commitMessage.match(/(?:fixed|fix|solved|close|closed|closes)\s*:? #(\d+)/i);
     return match ? match[1] : null;
 }
 
