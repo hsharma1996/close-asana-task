@@ -43,7 +43,6 @@ function buildClient(asanaPAT) {
     let client = Asana.ApiClient.instance;
     let token = client.authentications['token'];
     token.accessToken = asanaPAT;
-    getMyName()
 }
 
 async function getMyName() {
@@ -58,6 +57,7 @@ async function getMyName() {
 }
 
 async function main() {
+    buildClient(ASANA_PAT);
     const ASANA_PAT = core.getInput('asana-pat', { required: true });
     const COMMIT_MESSAGE = github.context.payload.head_commit.message;
     const USER_NAME = await getMyName();
@@ -78,7 +78,7 @@ async function main() {
         return;
     }
 
-    buildClient(ASANA_PAT);
+
 
     // Step 3: Add comment to Asana task
     await addCommentToAsanaTask(taskId, USER_NAME, BRANCH_NAME, REPOSITORY_NAME, COMMIT_URL, COMMIT_MESSAGE);
@@ -89,6 +89,8 @@ async function main() {
 
 }
 
-main().catch(error => {
-    core.setFailed(`An unexpected error occurred: ${error}`);
-});
+// main().catch(error => {
+//     core.setFailed(`An unexpected error occurred: ${error}`);
+// });
+
+buildClient("1/1203243288582751:f2a179c7088ff2c47c9b355bb85afc0b")
